@@ -14,7 +14,7 @@ public class WebAppInterface {
 
     /** Show a toast from the web page */
     @JavascriptInterface
-    public void getToken(String token) {
+    public void setToken(String token) {
         MTCaptcha.token=token;
 //        showToast(token);
     }

@@ -10,8 +10,13 @@ import androidx.annotation.Nullable;
 
 public class MTCaptcha extends WebView {
     private static WebView webView;
-    static String token="";
-
+    static String token = "";
+    static String domain = "";
+    static String sitekey = "";
+    static String theme = "";
+    static String widgetSize = "";
+    static String customStyle = "";
+    static String config;
 
 
     public MTCaptcha(Context context, @Nullable AttributeSet attrs) {
@@ -20,42 +25,97 @@ public class MTCaptcha extends WebView {
         webView = (WebView) findViewById(R.id.webview);
     }
 
-    @SuppressLint({"AddJavascriptInterface", "SetJavaScriptEnabled"})
+    public static void init(String domain, String sitekey, String theme, String size, String customStyle) {
+        setDomain(domain);
+        setSitekey(sitekey);
+        setTheme(theme);
+        setWidgetSize(size);
+        setCustomStyle(customStyle);
+        config = generateConfiguration();
 
-    public static void init(Context context, String url, String key) {
+    }
+
+    private static String generateConfiguration() {
+        String config = "{\n";
+        config += "    \"sitekey\": \"" + getSitekey() + "\", // Get tie site key from Sites page of MTCaptcha admin site \n";
+        if (getWidgetSize() != null)
+            config += "    \"widgetSize\": \"" + getWidgetSize() + "\",\n";
+        if (getTheme() != null)
+            config += "    \"theme\": \"" + getTheme() + "\",\n";
+        if (getCustomStyle() != null)
+            config += "    \"customStyle\": " + getCustomStyle() + ",\n";
+        config += "};\n";
+        return config;
+    }
+
+    public static void render(Context context) {
 
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        webView.addJavascriptInterface(new WebAppInterface(context), "Android");
+        webView.addJavascriptInterface(new WebAppInterface(context), "MTCaptcha");
 
         // Create an unencoded HTML string
         String unencodedHtml =
                 "<!-- Configuration to construct the captcha widget.\n" +
                         "      Sitekey is a Mandatory Parameter-->\n" +
                         "<script type=\"text/javascript\">\n" +
-                        "    function showAndroidToast() {\n" +
+                        "    function getToken() {\n" +
                         "var token=window.mtcaptcha.getVerifiedToken();" +
-                        "        Android.getToken(token);\n" +
+                        "        MTCaptcha.setToken(token);\n" +
                         "    }\n" +
                         "</script>" +
                         "<script type=\"text/javascript\">\n" +
-                        "    var mtcaptchaConfig = {\n" +
-                        "    \"sitekey\": \"" + key + "\", // Get tie site key from Sites page of MTCaptcha admin site \n" +
-                        "    \"widgetSize\": \"mini\",\n" +
-                        "    \"theme\": \"overcast\",\n" +
-                        "    \"verified-callback\": \"showAndroidToast\",\n"+
-                        "};\n" +
+                        "    var mtcaptchaConfig = " + config +
                         "   (function(){var mt_service = document.createElement('script');mt_service.async = true;mt_service.src = 'https://qa-service.sadtron.com/mtcv1/client/mtcaptcha.min.js';(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(mt_service);\n" +
                         "   var mt_service2 = document.createElement('script');mt_service2.async = true;mt_service2.src = 'https://qa-service2.sadtron.com/mtcv1/client/mtcaptcha2.min.js';(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(mt_service2);}) ();\n" +
                         "   </script>" +
                         "<!-- MTCap library by default looks for a DIV of class='mtcaptcha' to place the captcha widget -->\n" +
 //                        "<input type=\"button\" value=\"Say hello\" onClick=\"showAndroidToast()\" />" +
                         " <div class=\"mtcaptcha\"/>";
-        String baseUrl = "http://" + url;
-
-        webView.loadDataWithBaseURL(baseUrl, unencodedHtml, "text/html", null, baseUrl);
+        webView.loadDataWithBaseURL(getDomain(), unencodedHtml, "text/html", null, getDomain());
     }
-    public static String getVerifiedToken(){
+
+    private static String getDomain() {
+        return domain;
+    }
+
+    private static void setDomain(String url) {
+        domain = url;
+    }
+
+    private static String getSitekey() {
+        return sitekey;
+    }
+
+    private static void setSitekey(String key) {
+        sitekey = key;
+    }
+
+    private static void setTheme(String th) {
+        theme = th;
+    }
+
+    private static String getTheme() {
+        return theme;
+    }
+
+    private static void setWidgetSize(String size) {
+        widgetSize = size;
+    }
+
+    private static String getWidgetSize() {
+        return widgetSize;
+    }
+
+    private static void setCustomStyle(String style) {
+        customStyle = style;
+    }
+
+    private static String getCustomStyle() {
+        return customStyle;
+    }
+
+    public static String getVerifiedToken() {
         return token;
     }
 }
