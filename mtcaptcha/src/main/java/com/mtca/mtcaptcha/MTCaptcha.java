@@ -16,6 +16,7 @@ public class MTCaptcha extends WebView {
     static String theme = "";
     static String widgetSize = "";
     static String customStyle = "";
+    static String action = "";
     static String config;
 
 
@@ -25,12 +26,9 @@ public class MTCaptcha extends WebView {
         webView = (WebView) findViewById(R.id.webview);
     }
 
-    public static void init(String domain, String sitekey, String theme, String size, String customStyle) {
+    public static void init(String domain, String sitekey) {
         setDomain(domain);
         setSitekey(sitekey);
-        setTheme(theme);
-        setWidgetSize(size);
-        setCustomStyle(customStyle);
         config = generateConfiguration();
 
     }
@@ -42,6 +40,8 @@ public class MTCaptcha extends WebView {
             config += "    \"widgetSize\": \"" + getWidgetSize() + "\",\n";
         if (getTheme() != null)
             config += "    \"theme\": \"" + getTheme() + "\",\n";
+        if (getAction() != null)
+            config += "    \"theme\": \"" + getAction() + "\",\n";
         if (getCustomStyle() != null)
             config += "    \"customStyle\": " + getCustomStyle() + ",\n";
         config += "};\n";
@@ -91,7 +91,7 @@ public class MTCaptcha extends WebView {
         sitekey = key;
     }
 
-    private static void setTheme(String th) {
+    public static void setTheme(String th) {
         theme = th;
     }
 
@@ -99,7 +99,7 @@ public class MTCaptcha extends WebView {
         return theme;
     }
 
-    private static void setWidgetSize(String size) {
+    public static void setWidgetSize(String size) {
         widgetSize = size;
     }
 
@@ -107,12 +107,18 @@ public class MTCaptcha extends WebView {
         return widgetSize;
     }
 
-    private static void setCustomStyle(String style) {
+    public static void setCustomStyle(String style) {
         customStyle = style;
     }
 
     private static String getCustomStyle() {
         return customStyle;
+    }
+
+    private static String getAction() { return action; }
+
+    public static void setAction(String act) {
+        action = act;
     }
 
     public static String getVerifiedToken() {
