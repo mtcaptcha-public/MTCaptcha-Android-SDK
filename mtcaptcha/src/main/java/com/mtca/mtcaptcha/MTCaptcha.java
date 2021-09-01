@@ -41,7 +41,7 @@ public class MTCaptcha extends WebView {
         if (getTheme() != null)
             config += "    \"theme\": \"" + getTheme() + "\",\n";
         if (getAction() != null)
-            config += "    \"theme\": \"" + getAction() + "\",\n";
+            config += "    \"action\": \"" + getAction() + "\",\n";
         if (getCustomStyle() != null)
             config += "    \"customStyle\": " + getCustomStyle() + ",\n";
         config += "};\n";
