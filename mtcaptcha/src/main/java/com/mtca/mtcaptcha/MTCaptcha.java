@@ -3,13 +3,17 @@ package com.mtca.mtcaptcha;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
 public class MTCaptcha extends WebView {
     private static WebView webView;
+    static LinearLayout layout;
+
     static String token = "";
     static String domain = "";
     static String sitekey = "";
@@ -17,13 +21,16 @@ public class MTCaptcha extends WebView {
     static String widgetSize = "";
     static String customStyle = "";
     static String action = "";
+
     static String config;
+    private static LinearLayout.LayoutParams params;
 
 
     public MTCaptcha(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         inflate(context, R.layout.customview, this);
-        webView = (WebView) findViewById(R.id.webview);
+        webView = new WebView(context);
+        layout=(LinearLayout) findViewById(R.id.mtca_layout);
     }
 
     public static void init(String domain, String sitekey) {
@@ -35,7 +42,7 @@ public class MTCaptcha extends WebView {
 
     private static String generateConfiguration() {
         String config = "{\n";
-        config += "    \"sitekey\": \"" + getSitekey() + "\", // Get tie site key from Sites page of MTCaptcha admin site \n";
+        config += "    \"sitekey\": \"" + getSitekey() + "\", // Get the site key from Sites page of MTCaptcha admin site \n";
         if (getWidgetSize() != null)
             config += "    \"widgetSize\": \"" + getWidgetSize() + "\",\n";
         if (getTheme() != null)
@@ -50,9 +57,16 @@ public class MTCaptcha extends WebView {
 
     public static void render(Context context) {
 
+//        // height is 0, weight is 1
+//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1);
+
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webView.addJavascriptInterface(new WebAppInterface(context), "MTCaptcha");
+        params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1);
+        layout.addView(webView, params);
+
+
 
         // Create an unencoded HTML string
         String unencodedHtml =
@@ -115,7 +129,9 @@ public class MTCaptcha extends WebView {
         return customStyle;
     }
 
-    private static String getAction() { return action; }
+    private static String getAction() {
+        return action;
+    }
 
     public static void setAction(String act) {
         action = act;
