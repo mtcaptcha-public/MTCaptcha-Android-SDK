@@ -3,12 +3,9 @@ package com.mtca.mtcaptcha;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.Display;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
@@ -33,7 +30,7 @@ public class MTCaptcha extends WebView {
         super(context, attrs);
         inflate(context, R.layout.customview, this);
         webView = new WebView(context);
-        layout = (LinearLayout) findViewById(R.id.mtca_layout);
+        layout=(LinearLayout) findViewById(R.id.mtca_layout);
     }
 
     public static void init(String domain, String sitekey) {
@@ -60,16 +57,16 @@ public class MTCaptcha extends WebView {
 
     public static void render(Context context) {
 
+//        // height is 0, weight is 1
+//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1);
+
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webView.addJavascriptInterface(new WebAppInterface(context), "MTCaptcha");
-        layout.addView(webView);
+        params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1);
+        layout.addView(webView, params);
 
-//        LayoutParams layoutParam = (LayoutParams) layout.getLayoutParams();
-//        layoutParam.height = 550;
-//        layout.setLayoutParams(layoutParam);
-        webView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 250));
-////
+
 
         // Create an unencoded HTML string
         String unencodedHtml =
@@ -91,7 +88,6 @@ public class MTCaptcha extends WebView {
                         " <div class=\"mtcaptcha\"/>";
         webView.loadDataWithBaseURL(getDomain(), unencodedHtml, "text/html", null, getDomain());
     }
-
 
     private static String getDomain() {
         return domain;
