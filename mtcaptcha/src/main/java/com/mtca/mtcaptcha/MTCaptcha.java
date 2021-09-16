@@ -1,72 +1,70 @@
 package com.mtca.mtcaptcha;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.LinearLayout;
 
 import androidx.annotation.Nullable;
 
 public class MTCaptcha extends WebView {
-    private static WebView webView;
-    static LinearLayout layout;
 
     static String token = "";
     static String domain = "";
     static String sitekey = "";
     static String theme = "";
-    static String widgetSize = "";
+    static String widgetSize = "mini";
     static String customStyle = "";
     static String action = "";
 
     static String config;
-    private static LinearLayout.LayoutParams params;
 
+
+    public MTCaptcha(Context context) {
+        super(context);
+
+    }
 
     public MTCaptcha(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
-        inflate(context, R.layout.customview, this);
-        webView = new WebView(context);
-        layout=(LinearLayout) findViewById(R.id.mtca_layout);
     }
 
-    public static void init(String domain, String sitekey) {
+    public void init(Context context, String domain, String sitekey) {
         setDomain(domain);
         setSitekey(sitekey);
         config = generateConfiguration();
+        render(context);
 
     }
 
-    private static String generateConfiguration() {
+    private String generateConfiguration() {
         String config = "{\n";
-        config += "    \"sitekey\": \"" + getSitekey() + "\", // Get the site key from Sites page of MTCaptcha admin site \n";
-        if (getWidgetSize() != null)
+        config += "    \"sitekey\": \"" + getSitekey() + "\",\n";
+        if (!isEmpty(getWidgetSize()))
             config += "    \"widgetSize\": \"" + getWidgetSize() + "\",\n";
-        if (getTheme() != null)
+        if (!isEmpty(getTheme()))
             config += "    \"theme\": \"" + getTheme() + "\",\n";
-        if (getAction() != null)
+        if (!isEmpty(getAction()))
             config += "    \"action\": \"" + getAction() + "\",\n";
-        if (getCustomStyle() != null)
+        if (!isEmpty(getCustomStyle()))
             config += "    \"customStyle\": " + getCustomStyle() + ",\n";
         config += "};\n";
         return config;
     }
 
-    public static void render(Context context) {
+    private Boolean isEmpty(String value) {
+        if (value != null || value == "") {
+            return true;
+        } else {
+            return false;
+        }
+    }
 
-//        // height is 0, weight is 1
-//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1);
+    public void render(Context context) {
 
-        WebSettings webSettings = webView.getSettings();
+        WebSettings webSettings = this.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        webView.addJavascriptInterface(new WebAppInterface(context), "MTCaptcha");
-        params = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, 0, 1);
-        layout.addView(webView, params);
-
-
+        this.addJavascriptInterface(new WebAppInterface(context), "MTCaptcha");
 
         // Create an unencoded HTML string
         String unencodedHtml =
@@ -86,13 +84,16 @@ public class MTCaptcha extends WebView {
                         "<!-- MTCap library by default looks for a DIV of class='mtcaptcha' to place the captcha widget -->\n" +
 //                        "<input type=\"button\" value=\"Say hello\" onClick=\"showAndroidToast()\" />" +
                         " <div class=\"mtcaptcha\"/>";
-        webView.loadDataWithBaseURL(getDomain(), unencodedHtml, "text/html", null, getDomain());
+        this.loadDataWithBaseURL(getDomain(), unencodedHtml, "text/html", null, getDomain());
     }
 
+
     private static String getDomain() {
+
         return domain;
     }
 
+    // Domain name must have http or https
     private static void setDomain(String url) {
         domain = url;
     }
